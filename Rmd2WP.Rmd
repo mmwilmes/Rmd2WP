@@ -1,0 +1,145 @@
+---
+title: "Publish R to WordPress"
+author: "Madlen Wilmes"
+date: "5/26/2020"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+        echo = TRUE,
+        message = TRUE,
+        error = TRUE,
+        warning = TRUE,
+        highlight = TRUE,
+        prompt = FALSE
+        )
+```
+
+<!-- wp:paragraph -->
+The following piece of automation let me fall in love with R all over again: Publish a WordPress post directly from an R Markdown file! What's so great about that? Usually, I develop my analysis and visualizations in an RMarkdown file that I publish to Github (version control, code sharing---all the good reasons to use git). 
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+Github is fantastic to share code, but it's not trivial to skim through a script and quickly understand what was done and how. Even with lots of comments, it will require dedication and time. However, A WordPress post *about* the analysis provides background, emphasizes only the interesting coding bits, provides visual results, and has a much higher likelihood to be found by other programmers. 
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+Unfortunately, the above workflow separates the WordPress post from the underlying R script. Changing one part requires manually changing the other. The ability to have the raw code (posted on Github) and the WordPress post from a single source of truth (the R Markdown script) is a game-changer! Best of all, it's easy to set up, as we'll see below.
+<!-- /wp:paragraph -->
+
+<!-- wp:more -->
+<!--more-->
+<!-- /wp:more -->
+
+<!-- wp:getwid/advanced-heading {"titleTag":"h3"} -->
+<div class="wp-block-getwid-advanced-heading"><h3 class="wp-block-getwid-advanced-heading__content">Set up the R script that publishes your content</h3></div>
+<!-- /wp:getwid/advanced-heading -->
+
+<!-- wp:paragraph -->
+First, we set up a small R script (let's call it `PublishPost.R`) that will later publish the content (i.e., don't execute the script yet, that'll be the last step below).
+<!-- /wp:paragraph -->
+
+```{r setup-PublishPost.R, eval = F}
+# install the packages
+if (!require('knitr')) {
+  install.packages("knitr")
+}
+if (!require('devtools')) {
+  install.packages("devtools")
+}
+if (!require('RWordPress')) {
+  devtools::install_github(c("duncantl/XMLRPC", "duncantl/RWordPress"))
+}
+
+# load the packages
+library(knitr)
+library(RWordPress)
+
+# provide credentials to your WordPress site
+# i.e., replace with your WordPress user, password, and URL
+options(WordpressLogin = c(YOUR_WP_USER_NAME = 'YOUR_WP_PASSWORD'),
+        WordpressURL = 'YOUR_WORDPRESS_URL/xmlrpc.php')
+# note the addition of /xmlrpc.php to the URL
+
+# call the function that publishes the specified file
+knit2wp('TITLE_OF_FILE_YOU_WANT_TO_PUBLISH.Rmd',
+        title = 'TITLE OF YOUR WP POST',
+        publish = FALSE,
+        action = "newPost")
+```
+
+<!-- wp:paragraph -->
+The first lines, load the three R packages that pull everything off: [Duncan Temple Lang](http://www.stat.ucdavis.edu/~duncan/) developed `RWordPress`. William K. Morris, [Yihui Xie](https://yihui.org/knitr/demo/wordpress/), and Jared Lander developed the `knit2wp` function in `knitr`.
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+The middle part specifies the credentials to your WordPress site. I assume you don't want to distribute your WordPress login credentials on Github, so remember to exclude the script `PublishPost.R` in your `.gitignore`.
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+The last part of the script call the `knit2wp` function from the `knitr` package, which pushes your blog post to your site.
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+Note the options in the `knit2wp` call (see all by typing `?knit2wp` in your R console.) The setting `publish = TRUE` would publish your post right away, without you having even to open WordPress. I prefer to push my posts in draft mode (i.e., `publish = FALSE`). I then log in to WordPress and check that everything looks the way I want before making it public. I also set categories at this point, add SEO specs, etc.
+<!-- /wp:paragraph -->
+
+<!-- wp:getwid/advanced-heading {"titleTag":"h3"} -->
+<div class="wp-block-getwid-advanced-heading"><h3 class="wp-block-getwid-advanced-heading__content">Set up the Post</h3></div>
+<!-- /wp:getwid/advanced-heading -->
+
+<!-- wp:paragraph -->
+In its simplest form, writing your RMarkdown is business as usual. Write your code, add images, and so on, using standard  [Markdown syntax](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf).
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+With a little bit of extra effort, you can even include WordPress-specific formatting (i.e., something that is interpreted by PHP, not knitr). For instance, to keep your WordPress-specific paragraph formatting, you add the `<!-- wp:paragraph -->` function call in your R Markdown. This line of code is the opening element that sets up the HTML structure of the WordPress Block editor. `knitr` ignores those calls (as it's enclosed in R comment tags), but WordPress will know what to do with it. This is likely easier to follow in an example. To see these tags in action, head on over to Github and have a look at the source code of the very post that you are reading.
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+Another WordPress-specific element is the "More" tag that defines the part of the post that is visible in the blogroll. To include a "More" tag in your post, place the following snippet at the desired spot in your RMarkdown:
+<!-- /wp:paragraph -->
+
+
+```{r more-tag, eval=FALSE}
+<!-- wp:more -->
+<!--more-->
+<!-- /wp:more -->
+```
+
+
+<!-- wp:getwid/advanced-heading {"titleTag":"h3"} -->
+<div class="wp-block-getwid-advanced-heading"><h3 class="wp-block-getwid-advanced-heading__content">Publishing and Editing</h3></div>
+<!-- /wp:getwid/advanced-heading -->
+
+<!-- wp:paragraph -->
+Last but not least, execute the `PublishPost.R` script and marvel at the ease of this neat little publishing pipeline.
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+When you want to edit your post (versus publishing for the first time), you need to adjust the parameters in the `knit2wp` function call. 
+<!-- /wp:paragraph -->
+
+
+```{r knit2wp-edit, eval=FALSE}
+# editing a post requires 'action' and 'postid' parameters in knit2wp
+knit2wp('TITLE_OF_FILE_YOU_WANT_TO_PUBLISH.Rmd',
+        title = 'Publish to WordPress directly from RStudio',
+        publish = FALSE,  # if published, then TRUE
+        action = "editPost",
+        postid = 317)
+```
+
+
+<!-- wp:paragraph -->
+The `postid` is the ID of the post in WordPress. Not sure how to find the WordPress post ID? [Look here](https://www.elegantthemes.com/blog/tips-tricks/how-to-find-your-wordpress-page-id-and-post-id-and-what-you-can-do-with-them).
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+Please comment below if you run into trouble with the setup. Happy analyzing and blogging!
+<!-- /wp:paragraph -->
+
+
+
