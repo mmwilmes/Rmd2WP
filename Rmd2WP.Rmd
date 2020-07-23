@@ -94,9 +94,17 @@ Note the options in the `knit2wp` call (see all by typing `?knit2wp` in your R c
 In its simplest form, writing your RMarkdown is business as usual. Write your code, add images, and so on, using standard  [Markdown syntax](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf).
 <!-- /wp:paragraph -->
 
+<!-- wp:getwid/advanced-heading {"titleTag":"h4"} -->
+<div class="wp-block-getwid-advanced-heading"><h4 class="wp-block-getwid-advanced-heading__content">Include paragraph styles</h4></div>
+<!-- /wp:getwid/advanced-heading -->
+
 <!-- wp:paragraph -->
-With a little bit of extra effort, you can even include WordPress-specific formatting (i.e., something that is interpreted by PHP, not knitr). For instance, to keep your WordPress-specific paragraph formatting, you add the `<!-- wp:paragraph -->` function call in your R Markdown. This line of code is the opening element that sets up the HTML structure of the WordPress Block editor. `knitr` ignores those calls (as it's enclosed in R comment tags), but WordPress will know what to do with it. This is likely easier to follow in an example. To see these tags in action, head on over to Github and have a look at the source code of the very post that you are reading.
+With a little bit of extra effort, you can include WordPress-specific formatting (i.e., something that is interpreted by PHP, not knitr). For instance, to keep your WordPress-specific paragraph formatting, you add the `<!-- wp:paragraph -->` function call in your R Markdown. This line of code is the opening element that sets up the HTML structure of the WordPress Block editor. `knitr` ignores those calls (as it's enclosed in R comment tags), but WordPress will know what to do with it. This is likely easier to follow in an example. To see these tags in action, [head on over to Github](https://github.com/mmwilmes/Rmd2WP) and have a look at the source code of the very post that you are reading.
 <!-- /wp:paragraph -->
+
+<!-- wp:getwid/advanced-heading {"titleTag":"h4"} -->
+<div class="wp-block-getwid-advanced-heading"><h4 class="wp-block-getwid-advanced-heading__content">Include WordPress 'Read More' tag</h4></div>
+<!-- /wp:getwid/advanced-heading -->
 
 <!-- wp:paragraph -->
 Another WordPress-specific element is the "More" tag that defines the part of the post that is visible in the blogroll. To include a "More" tag in your post, place the following snippet at the desired spot in your RMarkdown:
@@ -109,6 +117,29 @@ Another WordPress-specific element is the "More" tag that defines the part of th
 <!-- /wp:more -->
 ```
 
+
+<!-- wp:getwid/advanced-heading {"titleTag":"h4"} -->
+<div class="wp-block-getwid-advanced-heading"><h4 class="wp-block-getwid-advanced-heading__content">Include Math </h4></div>
+<!-- /wp:getwid/advanced-heading -->
+
+<!-- wp:paragraph -->
+You can include mathematical notation in your MarkDown file as you normally would. However, you need to install an additional plugin to render it correctly on your WordPress page. One option is the [Simple Mathjax plugin](https://wordpress.org/plugins/simple-mathjax/).
+<!-- /wp:paragraph -->
+
+
+<!-- wp:getwid/advanced-heading {"titleTag":"h4"} -->
+<div class="wp-block-getwid-advanced-heading"><h4 class="wp-block-getwid-advanced-heading__content">Internal links (HTML anchor) </h4></div>
+<!-- /wp:getwid/advanced-heading -->
+
+<!-- wp:paragraph -->
+If you write very long posts (and need a table of contents), or want to otherwise reference text on the same page, anchors are nifty solution. You need two tags for it to work:
+<!-- /wp:paragraph -->
+
+```{html demonstrate anchor}
+This is the <a name="demo_anchor">text I want to link to</a>.
+
+Here is the [link](#demo_anchor) to the text above.
+```
 
 <!-- wp:getwid/advanced-heading {"titleTag":"h3"} -->
 <div class="wp-block-getwid-advanced-heading"><h3 class="wp-block-getwid-advanced-heading__content">Publishing and Editing</h3></div>
@@ -136,6 +167,7 @@ knit2wp('TITLE_OF_FILE_YOU_WANT_TO_PUBLISH.Rmd',
 <!-- wp:paragraph -->
 The `postid` is the ID of the post in WordPress. Not sure how to find the WordPress post ID? [Look here](https://www.elegantthemes.com/blog/tips-tricks/how-to-find-your-wordpress-page-id-and-post-id-and-what-you-can-do-with-them).
 <!-- /wp:paragraph -->
+
 
 <!-- wp:paragraph -->
 Please comment below if you run into trouble with the setup. Happy analyzing and blogging!
